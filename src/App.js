@@ -42,6 +42,7 @@ const App = () => {
             );
             setUsername("");
             setPassword("");
+            notifySuccess(`${user.name} successfully logged in`);
         } catch (exception) {
             console.log(exception);
             notifyError("Wrong credentials");
