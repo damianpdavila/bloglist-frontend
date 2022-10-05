@@ -11,6 +11,9 @@ const App = () => {
     const [user, setUser] = useState(null);
     const [notificationMessage, setNotificationMessage] = useState("");
     const [messageType, setMessageType] = useState("");
+    const [title, setTitle] = useState([]);
+    const [author, setAuthor] = useState([]);
+    const [url, setUrl] = useState([]);
 
     useEffect(() => {
         blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -31,6 +34,7 @@ const App = () => {
                 username,
                 password,
             });
+            blogService.setToken(user.token);
             setUser(user);
             window.localStorage.setItem(
                 "loggedInBlogList",
@@ -39,17 +43,33 @@ const App = () => {
             setUsername("");
             setPassword("");
         } catch (exception) {
+            console.log(exception);
             notifyError("Wrong credentials");
-            setTimeout(() => {
-                setNotificationMessage("");
-            }, 5000);
         }
     };
+    const handleAdd = async (event) => {
+      event.preventDefault();
+      try {
+          const newBlog = await blogService.create({
+              title,
+              author,
+              url,
+          });
+          setBlogs(blogs.concat(newBlog))
+          notifySuccess("Blog successfully added");
+          setAuthor("")
+          setTitle("")
+          setUrl("")
+      } catch (exception) {
+          notifyError(`An error occurred: ${exception}`);
+      }
+  };
+
     const handleLogout = async (event) => {
         setUser(null);
         window.localStorage.removeItem("loggedInBlogList");
         notifySuccess("You have been logged out");
-  };
+    };
 
     const notifySuccess = (message) => {
         setMessageType("success");
@@ -109,9 +129,48 @@ const App = () => {
                 />
                 <div>
                     <div>
-                      {user.name} logged in 
-                      <button onClick={handleLogout}>Logout</button>
+                        {user.name} logged in
+                        <button onClick={handleLogout}>Logout</button>
                     </div>
+
+                    <h2>Add Blog</h2>
+                    <form onSubmit={handleAdd}>
+                        <div>
+                            Title:
+                            <input
+                                type="text"
+                                value={title}
+                                name="title"
+                                onChange={({ target }) =>
+                                    setTitle(target.value)
+                                }
+                            />
+                        </div>
+                        <div>
+                            Author:
+                            <input
+                                type="text"
+                                value={author}
+                                name="author"
+                                onChange={({ target }) =>
+                                    setAuthor(target.value)
+                                }
+                            />
+                        </div>
+                        <div>
+                            URL:
+                            <input
+                                type="text"
+                                value={url}
+                                name="url"
+                                onChange={({ target }) =>
+                                    setUrl(target.value)
+                                }
+                            />
+                        </div>
+                        <button type="submit">Add Blog</button>
+                    </form>
+
                     <h2>Blogs</h2>
                     {blogs.map((blog) => (
                         <Blog key={blog.id} blog={blog} />
