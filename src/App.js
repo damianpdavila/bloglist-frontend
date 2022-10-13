@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import Blog from "./components/Blog";
+import Togglable from "./components/Togglable";
+import BlogForm from "./components/BlogForm";
 import Notification from "./components/Notification";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
@@ -133,45 +135,17 @@ const App = () => {
                         {user.name} logged in
                         <button onClick={handleLogout}>Logout</button>
                     </div>
-
-                    <h2>Add Blog</h2>
-                    <form onSubmit={handleAdd}>
-                        <div>
-                            Title:
-                            <input
-                                type="text"
-                                value={title}
-                                name="title"
-                                onChange={({ target }) =>
-                                    setTitle(target.value)
-                                }
-                            />
-                        </div>
-                        <div>
-                            Author:
-                            <input
-                                type="text"
-                                value={author}
-                                name="author"
-                                onChange={({ target }) =>
-                                    setAuthor(target.value)
-                                }
-                            />
-                        </div>
-                        <div>
-                            URL:
-                            <input
-                                type="text"
-                                value={url}
-                                name="url"
-                                onChange={({ target }) =>
-                                    setUrl(target.value)
-                                }
-                            />
-                        </div>
-                        <button type="submit">Add Blog</button>
-                    </form>
-
+                    <Togglable buttonLabel='Add note'>
+                        <BlogForm
+                            handleAdd={handleAdd}
+                            handleTitleChange={({ target }) => setTitle(target.value)}
+                            handleAuthorChange={({ target }) => setAuthor(target.value)}
+                            handleUrlChange={({ target }) => setUrl(target.value)}
+                            title={title}
+                            author={author}
+                            url={url}
+                        />                    
+                    </Togglable>
                     <h2>Blogs</h2>
                     {blogs.map((blog) => (
                         <Blog key={blog.id} blog={blog} />
