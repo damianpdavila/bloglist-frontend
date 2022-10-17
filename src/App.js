@@ -84,6 +84,26 @@ const App = () => {
         }
     };
 
+    const handleLike = async (id) => {
+
+        const blog = blogs.find( blog => blog.id === id);
+
+        try {
+            const updatedLikes = blog.likes += 1
+            const updatedBlog = await blogService.update(
+                id,
+                updatedLikes,
+            );
+            blogs.map( blog => { return blog.id === id ? blog : updatedBlog; })
+            setBlogs(blogs);
+            notifySuccess(`Your like has been added to ${blog.name}`);
+        } catch (exception) {
+            console.log(exception);
+            notifyError("An error occurred");
+        }
+    };
+
+
     if (user === null) {
         return (
             <>
@@ -129,14 +149,14 @@ const App = () => {
                         {user.name} logged in
                         <button onClick={handleLogout}>Logout</button>
                     </div>
-                    <Togglable buttonLabel='Add note'>
+                    <Togglable buttonLabel='Add blog'>
                         <BlogForm
                             addBlog={handleAdd}
                         />                    
                     </Togglable>
                     <h2>Blogs</h2>
                     {blogs.map((blog) => (
-                        <Blog key={blog.id} blog={blog} />
+                        <Blog key={blog.id} blog={blog} addLike={() => handleLike(blog.id)} />
                     ))}
                 </div>
             </div>
