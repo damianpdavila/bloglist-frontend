@@ -49,7 +49,7 @@ const App = () => {
         }
     };
 
-    const handleLogout = async (event) => {
+    const handleLogout = async () => {
         setUser(null);
         window.localStorage.removeItem("loggedInBlogList");
         notifySuccess("You have been logged out");
@@ -79,10 +79,6 @@ const App = () => {
                 url,
             });
 
-            //TEST
-            console.log(`newBlog: ${JSON.stringify(newBlog)}`);
-            //ENDTEST
-            
             setBlogs(blogs.concat(newBlog))
             notifySuccess("Blog successfully added");
         } catch (exception) {
@@ -113,7 +109,7 @@ const App = () => {
             return;
         }
         try {
-            const deletedBlog = await blogService.destroy(
+            await blogService.destroy(
                 blog.id,
             );
             const updatedBlogs = blogs.filter( blogOrig => { return blogOrig.id !== blog.id })
@@ -126,8 +122,8 @@ const App = () => {
     };
 
 
-    const sortByLikes = () => { 
-        blogs.sort( (a, b) => b.likes - a.likes); 
+    const sortByLikes = () => {
+        blogs.sort( (a, b) => b.likes - a.likes);
         setBlogs([...blogs]);
         console.log(blogs);
     }
@@ -181,7 +177,7 @@ const App = () => {
                     <Togglable buttonLabel='Add blog'>
                         <BlogForm
                             addBlog={handleAdd}
-                        />                    
+                        />
                     </Togglable>
                     <h2>Blogs</h2>
                     <button onClick={sortByLikes}>Sort by Likes</button>
