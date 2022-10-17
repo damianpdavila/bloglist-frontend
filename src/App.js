@@ -96,12 +96,18 @@ const App = () => {
             );
             blogs.map( blog => { return blog.id === id ? blog : updatedBlog; })
             setBlogs(blogs);
-            notifySuccess(`Your like has been added to ${blog.name}`);
+            notifySuccess(`Your like has been added to ${blog.title}`);
         } catch (exception) {
             console.log(exception);
             notifyError("An error occurred");
         }
     };
+
+    const sortByLikes = () => { 
+        blogs.sort( (a, b) => b.likes - a.likes); 
+        setBlogs([...blogs]);
+        console.log(blogs);
+    }
 
 
     if (user === null) {
@@ -155,6 +161,7 @@ const App = () => {
                         />                    
                     </Togglable>
                     <h2>Blogs</h2>
+                    <button onClick={sortByLikes}>Sort by Likes</button>
                     {blogs.map((blog) => (
                         <Blog key={blog.id} blog={blog} addLike={() => handleLike(blog.id)} />
                     ))}
