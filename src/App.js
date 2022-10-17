@@ -23,6 +23,7 @@ const App = () => {
         if (returning) {
             const user = JSON.parse(returning);
             setUser(user);
+            blogService.setToken(user.token);
         }
     }, []);
 
@@ -77,6 +78,11 @@ const App = () => {
                 author,
                 url,
             });
+
+            //TEST
+            console.log(`newBlog: ${JSON.stringify(newBlog)}`);
+            //ENDTEST
+            
             setBlogs(blogs.concat(newBlog))
             notifySuccess("Blog successfully added");
         } catch (exception) {
@@ -85,7 +91,6 @@ const App = () => {
     };
 
     const handleLike = async (id) => {
-
         const blog = blogs.find( blog => blog.id === id);
 
         try {
@@ -102,6 +107,24 @@ const App = () => {
             notifyError("An error occurred");
         }
     };
+
+    const handleDelete = async (blog) => {
+        if (! window.confirm(`Are you sure you wish to delete "${blog.title}" by ${blog.author}?`)) {
+            return;
+        }
+        try {
+            const deletedBlog = await blogService.destroy(
+                blog.id,
+            );
+            const updatedBlogs = blogs.filter( blogOrig => { return blogOrig.id !== blog.id })
+            setBlogs(updatedBlogs);
+            notifySuccess("The blog has been removed");
+        } catch (exception) {
+            console.log(exception);
+            notifyError("An error occurred");
+        }
+    };
+
 
     const sortByLikes = () => { 
         blogs.sort( (a, b) => b.likes - a.likes); 
@@ -163,7 +186,7 @@ const App = () => {
                     <h2>Blogs</h2>
                     <button onClick={sortByLikes}>Sort by Likes</button>
                     {blogs.map((blog) => (
-                        <Blog key={blog.id} blog={blog} addLike={() => handleLike(blog.id)} />
+                        <Blog key={blog.id} blog={blog} username={user.username} addLike={() => handleLike(blog.id)} deleteBlog={() => handleDelete(blog)} />
                     ))}
                 </div>
             </div>
