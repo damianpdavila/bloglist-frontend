@@ -78,7 +78,7 @@ const App = () => {
                 author,
                 url,
             });
-
+            newBlog.user = user;
             setBlogs(blogs.concat(newBlog))
             notifySuccess("Blog successfully added");
         } catch (exception) {
