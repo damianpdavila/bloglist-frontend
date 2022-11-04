@@ -36,17 +36,13 @@ describe('Blog app', function () {
             cy.get('input[name="Password"]').type('bad');
             cy.get('button#login').click();
             cy.contains('Wrong credentials');
-            cy.get('.error').should('have.css', 'color', 'rgb(255, 0, 0)')
+            cy.get('.error').should('have.css', 'color', 'rgb(255, 0, 0)');
         });
     });
     describe('When logged in', function () {
         beforeEach(function () {
-            cy.contains('Login').click();
-            cy.get('input[name="Username"]').type(user.username);
-            cy.get('input[name="Password"]').type(user.password);
-            cy.get('button#login').click();
+            cy.login(user);
         });
-
         it('a new blog can be created', function () {
             cy.contains('Add blog').click();
             cy.get('input[name="title"]').type(blog.title);
@@ -54,6 +50,25 @@ describe('Blog app', function () {
             cy.get('input[name="url"]').type(blog.url);
             cy.contains('Submit Blog').click();
             cy.contains(blog.title);
+        });
+        it('a user can like a blog twice', function () {
+            cy.contains('Add blog').click();
+            cy.get('input[name="title"]').type(blog.title);
+            cy.get('input[name="author"]').type(blog.author);
+            cy.get('input[name="url"]').type(blog.url);
+            cy.contains('Submit Blog').click();
+            cy.get('.blog')
+                .contains(blog.title)
+                .find('button')
+                .contains('View')
+                .click();
+            cy.get('.blog')
+                .contains(blog.title)
+                .find('button')
+                .contains('Like')
+                .as('LikeIt')
+                .click();
+            cy.get('@LikeIt').click();
         });
     });
 });
