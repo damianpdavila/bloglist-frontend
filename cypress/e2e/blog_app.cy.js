@@ -39,7 +39,7 @@ describe('Blog app', function () {
             cy.get('.error').should('have.css', 'color', 'rgb(255, 0, 0)')
         });
     });
-    describe('when logged in', function () {
+    describe('When logged in', function () {
         beforeEach(function () {
             cy.contains('Login').click();
             cy.get('input[name="Username"]').type(user.username);
