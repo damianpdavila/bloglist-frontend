@@ -70,5 +70,23 @@ describe('Blog app', function () {
                 .click();
             cy.get('@LikeIt').click();
         });
+        it('a user can delete one of their own blogs', function () {
+            cy.contains('Add blog').click();
+            cy.get('input[name="title"]').type(blog.title);
+            cy.get('input[name="author"]').type(blog.author);
+            cy.get('input[name="url"]').type(blog.url);
+            cy.contains('Submit Blog').click();
+            cy.get('.blog')
+                .contains(blog.title)
+                .find('button')
+                .contains('View')
+                .click();
+            cy.get('.blog')
+                .contains(blog.title)
+                .find('button')
+                .contains('Remove')
+                .click();
+            cy.get('.blog')
+        });
     });
 });
