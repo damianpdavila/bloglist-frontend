@@ -3,6 +3,7 @@ import '@testing-library/jest-dom/extend-expect';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event'
 import Blog from './Blog';
+import BlogForm from './BlogForm';
 
 test('renders content', () => {
     const blog = {
@@ -78,4 +79,39 @@ test('clicking like twice triggers event handler twice', async () => {
     await user.click(likeButton)
     await user.click(likeButton)
     expect(mockLikeHandler.mock.calls).toHaveLength(2)
+});
+
+test('submit new blog triggers event handler with passed data', async () => {
+    const blog = {
+        title: 'Title Test Render Content',
+        author: 'Author Test Render Content',
+        url: 'https://testrender.com',
+        likes: 0,
+        user: {username: 'damian'}
+    };
+
+    const mockAddHandler = jest.fn()
+
+    const { container } = render(<BlogForm addBlog={mockAddHandler}/>)
+
+    const user = userEvent.setup()
+
+    const inputTitle = container.querySelector('input[name="title"]')
+    await user.type(inputTitle, blog.title)
+
+    const inputAuthor = container.querySelector('input[name="author"]')
+    await user.type(inputAuthor, blog.author)
+
+    const inputUrl = container.querySelector('input[name="url"]')
+    await user.type(inputUrl, blog.url)
+
+    const submitButton = screen.getByText('Submit Blog')
+    await user.click(submitButton)
+
+    expect(mockAddHandler.mock.calls).toHaveLength(1)
+    console.log(JSON.stringify(mockAddHandler.mock.calls));
+    expect(mockAddHandler.mock.calls[0][0].title).toBe(blog.title)
+    expect(mockAddHandler.mock.calls[0][0].author).toBe(blog.author)
+    expect(mockAddHandler.mock.calls[0][0].url).toBe(blog.url)
+
 });
