@@ -6,6 +6,14 @@ describe('Blog app', function () {
         likes: 0,
         user: { username: 'damian' },
     };
+    const blogLikes = {
+        title: 'Title Test Cypress More Likes',
+        author: 'Author Test Cypress',
+        url: 'https://testcypress.com',
+        likes: 3,
+        user: { username: 'damian' },
+    };
+
     const user = {
         username: 'damian',
         name: 'Damian Davila',
@@ -43,6 +51,34 @@ describe('Blog app', function () {
         beforeEach(function () {
             cy.login(user);
         });
+        it('blogs can be sorted by likes', function () {
+            cy.contains('Add blog').click();
+            cy.get('input[name="title"]').type(blogLikes.title);
+            cy.get('input[name="author"]').type(blogLikes.author);
+            cy.get('input[name="url"]').type(blogLikes.url);
+            cy.contains('Submit Blog').click();
+
+            cy.get('input[name="title"]').type(blog.title);
+            cy.get('input[name="author"]').type(blog.author);
+            cy.get('input[name="url"]').type(blog.url);
+            cy.contains('Submit Blog').click();
+
+            cy.get('.blog')
+                .contains(blogLikes.title)
+                .find('button')
+                .contains('View')
+                .click();
+            cy.get('.blog')
+                .contains(blogLikes.title)
+                .find('button')
+                .contains('Like')
+                .as('LikeIt')
+                .click();
+            cy.contains('Sort by Likes').click();
+            cy.get('.blog').eq(0).should('contain', blogLikes.title);
+            cy.get('.blog').eq(1).should('contain', blog.title);
+        });
+
         it('a new blog can be created', function () {
             cy.contains('Add blog').click();
             cy.get('input[name="title"]').type(blog.title);
@@ -86,7 +122,7 @@ describe('Blog app', function () {
                 .find('button')
                 .contains('Remove')
                 .click();
-            cy.get('.blog')
+            cy.get('.blog');
         });
     });
 });
