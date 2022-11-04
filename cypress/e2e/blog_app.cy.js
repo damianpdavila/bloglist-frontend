@@ -6,39 +6,44 @@ describe('Blog app', function () {
         likes: 0,
         user: { username: 'damian' },
     };
+    const user = {
+        username: 'damian',
+        name: 'Damian Davila',
+        password: 'd03p29d64!',
+    };
 
     beforeEach(function () {
         cy.request('POST', 'http://localhost:3003/api/testing/reset/');
-        const user = {
-            username: 'damian',
-            name: 'Damian Davila',
-            password: 'd03p29d64!',
-        };
         cy.request('POST', 'http://localhost:3003/api/users/', user);
         cy.visit('http://localhost:3000');
     });
-    it('Front page can be opened', function () {
-        cy.contains('Blog App');
-        cy.contains('Login to application');
+    describe('Login', function () {
+        it('form can be opened', function () {
+            cy.contains('Login').click();
+            cy.get('input[name="Username"]');
+            cy.get('input[name="Password"]');
+        });
+        it('succeeds with correct credentials', function () {
+            cy.contains('Login').click();
+            cy.get('input[name="Username"]').type(user.username);
+            cy.get('input[name="Password"]').type(user.password);
+            cy.get('button#login').click();
+            cy.contains(`${user.name} logged in`);
+        });
+        it('fails with incorrect credentials', function () {
+            cy.contains('Login').click();
+            cy.get('input[name="Username"]').type('bad');
+            cy.get('input[name="Password"]').type('bad');
+            cy.get('button#login').click();
+            cy.contains('Wrong credentials');
+            cy.get('.error').should('have.css', 'color', 'rgb(255, 0, 0)')
+        });
     });
-    it('Login form can be opened', function () {
-        cy.contains('Login').click();
-        cy.get('input[name="Username"]');
-        cy.get('input[name="Password"]');
-    });
-    it('User can log in', function () {
-        cy.contains('Login').click();
-        cy.get('input[name="Username"]').type('damian');
-        cy.get('input[name="Password"]').type('d03p29d64!');
-        cy.get('button#login').click();
-        cy.contains('Damian Davila logged in');
-    });
-
     describe('when logged in', function () {
         beforeEach(function () {
             cy.contains('Login').click();
-            cy.get('input[name="Username"]').type('damian');
-            cy.get('input[name="Password"]').type('d03p29d64!');
+            cy.get('input[name="Username"]').type(user.username);
+            cy.get('input[name="Password"]').type(user.password);
             cy.get('button#login').click();
         });
 
